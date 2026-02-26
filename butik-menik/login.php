@@ -70,9 +70,13 @@ if (isset($_POST['login'])) {
             <button type="submit" name="login" class="btn-primary">Masuk</button>
         </form>
 
-        <p class="register-link">
+        <p class="register-link" style="margin-bottom: 10px;">
+            Lupa password? <a href="reset_password.php">Reset di sini</a>
+        </p>
+        <p class="register-link" style="margin-top: 0;">
             Belum punya akun? <a href="register.php">Daftar akun baru</a>
         </p>
     </div>
 </body>
+
 </html>
