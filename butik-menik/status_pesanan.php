@@ -8,7 +8,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 $user_id = $_SESSION['id'];
-$query = mysqli_query($conn, "SELECT * FROM pesanan WHERE user_id='$user_id' ORDER BY tanggal_pesan DESC");
+$query = mysqli_query($conn, "SELECT * FROM pesanan WHERE id_user='$user_id' ORDER BY tanggal_pesan DESC");
 ?>
 
 <!DOCTYPE html>
