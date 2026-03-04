@@ -8,7 +8,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 $user_id = $_SESSION['id'];
-$pesanan = mysqli_query($conn, "SELECT * FROM pesanan WHERE user_id='$user_id' AND status NOT IN ('Selesai','Dibatalkan')");
+$pesanan = mysqli_query($conn, "SELECT * FROM pesanan WHERE id_user='$user_id' AND status NOT IN ('Selesai','Dibatalkan')");
 
 if (isset($_POST['kirim'])) {
     $pesanan_id = $_POST['pesanan_id'];
