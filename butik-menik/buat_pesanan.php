@@ -6,89 +6,153 @@ if (!isset($_SESSION['id'])) {
     header("Location: login.php");
     exit();
 }
-
-if (isset($_POST['kirim'])) {
-    $user_id = $_SESSION['id'];
-    $jenis_baju = $_POST['jenis_baju'];
-    $ukuran = $_POST['ukuran'];
-    $catatan = $_POST['catatan'];
-
-    // upload desain
-    $desain = $_FILES['desain']['name'];
-    $tmp = $_FILES['desain']['tmp_name'];
-    $target_dir = "uploads/desain/";
-    if (!is_dir($target_dir)) {
-        mkdir($target_dir, 0777, true);
-    }
-    $target_file = $target_dir . time() . "_" . basename($desain);
-    move_uploaded_file($tmp, $target_file);
-
-    $query = "INSERT INTO pesanan (user_id, jenis_baju, ukuran, catatan, desain, status, tanggal_pesan) 
-              VALUES ('$user_id', '$jenis_baju', '$ukuran', '$catatan', '$target_file', 'Menunggu Verifikasi', NOW())";
-
-    if (mysqli_query($conn, $query)) {
-        $success = "Pesanan berhasil dibuat!";
-    } else {
-        $error = "Gagal membuat pesanan.";
-    }
-}
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Buat Pesanan - Butik Menik Modeste</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buat Pesanan</title>
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI', sans-serif;
+    background:#f5f5f5;
+}
+
+.header{
+    padding:15px;
+    text-align:center;
+    font-weight:bold;
+    background:white;
+    border-bottom:1px solid #ddd;
+}
+
+.container{
+    padding:20px;
+}
+
+.upload-box{
+    border:2px dashed #ccc;
+    padding:25px;
+    text-align:center;
+    border-radius:12px;
+    margin-bottom:20px;
+    background:white;
+    cursor:pointer;
+}
+
+.upload-box:hover{
+    border-color:#111;
+}
+
+.upload-box input{
+    margin-top:10px;
+}
+
+.preview{
+    margin-top:15px;
+    max-width:100%;
+    border-radius:10px;
+    display:none;
+}
+
+label{
+    font-weight:600;
+    display:block;
+    margin-bottom:5px;
+}
+
+select, textarea{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    margin-bottom:15px;
+}
+
+textarea{
+    height:100px;
+}
+
+button{
+    width:100%;
+    background:#111;
+    color:white;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#333;
+}
+
+.back{
+    text-decoration:none;
+    display:block;
+    margin-bottom:15px;
+    color:black;
+}
+</style>
 </head>
+
 <body>
-    <div class="navbar">
-        Butik Menik Modeste
-    </div>
 
-    <div class="container">
-        <h2>Buat Pesanan</h2>
+<div class="header">
+    Buat Pesanan Baru
+</div>
 
-        <?php if (isset($success)): ?>
-            <div class="alert success"><?php echo $success; ?></div>
-        <?php elseif (isset($error)): ?>
-            <div class="alert error"><?php echo $error; ?></div>
-        <?php endif; ?>
+<div class="container">
 
-        <form method="POST" enctype="multipart/form-data" class="order-form">
-            <div class="form-group">
-                <label>Jenis Baju</label>
-                <input type="text" name="jenis_baju" placeholder="Contoh: Kemeja Batik" required>
-            </div>
+<a href="dashboard_customer.php" class="back">← Kembali ke Dashboard</a>
 
-            <div class="form-group">
-                <label>Ukuran</label>
-                <select name="ukuran" required>
-                    <option value="" disabled selected>Pilih ukuran</option>
-                    <option>S</option>
-                    <option>M</option>
-                    <option>L</option>
-                    <option>XL</option>
-                    <option>XXL</option>
-                </select>
-            </div>
+<form action="proses_pesanan.php" method="POST" enctype="multipart/form-data">
 
-            <div class="form-group">
-                <label>Catatan Tambahan</label>
-                <textarea name="catatan" placeholder="Opsional: Warna, model, atau detail lainnya"></textarea>
-            </div>
+<div class="upload-box">
+    <strong>Upload Design</strong><br>
+    <small>PNG / JPG maksimal 5MB</small><br>
+    <input type="file" name="desain" accept="image/*" onchange="previewImage(event)">
+    <img id="preview" class="preview">
+</div>
 
-            <div class="form-group upload-area">
-                <label>Upload Desain</label>
-                <input type="file" name="desain" accept=".jpg,.jpeg,.png" required>
-                <small>Tipe file: PNG, JPG, maksimal 50KB</small>
-            </div>
+<label>Jenis Baju</label>
+<select name="jenis_baju" required>
+    <option value="">Pilih jenis baju</option>
+    <option value="Kebaya">Kebaya</option>
+    <option value="Gamis">Gamis</option>
+    <option value="Dress">Dress</option>
+</select>
 
-            <button type="submit" name="kirim" class="btn-primary">Kirim Pesanan</button>
-        </form>
+<label>Ukuran</label>
+<select name="ukuran" required>
+    <option value="">Pilih ukuran</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+</select>
 
-        <div class="back-link">
-            <a href="dashboard_customer.php">Kembali ke Dashboard</a>
-        </div>
-    </div>
+<label>Catatan Tambahan</label>
+<textarea name="catatan" placeholder="Warna, model, detail lainnya"></textarea>
+
+<button type="submit">✔ Simpan Pesanan</button>
+
+</form>
+
+</div>
+
+<script>
+function previewImage(event){
+    const preview = document.getElementById('preview');
+    preview.src = URL.createObjectURL(event.target.files[0]);
+    preview.style.display = "block";
+}
+</script>
+
 </body>
 </html>
