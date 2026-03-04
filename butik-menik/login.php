@@ -24,7 +24,15 @@ if (isset($_POST['login'])) {
                 $_SESSION['id'] = $data['id'];
                 $_SESSION['nama'] = $data['nama'];
                 $_SESSION['role'] = $data['role'];
-                header("Location: dashboard_customer.php");
+                
+                // REDIRECT BERDASARKAN ROLE
+                if ($data['role'] == 'owner') {
+                    header("Location: dashboard_owner.php");
+                } elseif ($data['role'] == 'staff') {
+                    header("Location: dashboard_staff.php");
+                } else {
+                    header("Location: dashboard_customer.php");
+                }
                 exit();
             } else {
                 $error = "Password salah!";
@@ -78,5 +86,4 @@ if (isset($_POST['login'])) {
         </p>
     </div>
 </body>
-
 </html>
